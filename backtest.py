@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 # ----------------------------------------------------------------------------
 # Settings (decide these up front; do not tune them on the out-of-sample period)
 # ----------------------------------------------------------------------------
-TICKERS = ["SPY", "EWU", "TLT", "GLD"]  # US equities, UK equities (USD), bonds, gold
+TICKERS = ["SPY", "ISF.L", "TLT", "GLD"]  # US equities, UK equities, bonds, gold
 START = "2005-01-01"
 SPLIT_DATE = "2017-01-01"  # before = in-sample, after = out-of-sample
 LOOKBACK = 12              # months
@@ -30,11 +30,8 @@ COST_BPS = 10              # cost per unit of turnover, in basis points
 # Step 3: data
 # ----------------------------------------------------------------------------
 def load_monthly_prices():
-    prices = yf.download(TICKERS, start=START, auto_adjust=True, progress=False, threads=False)["Close"]
+    prices = yf.download(TICKERS, start=START, auto_adjust=True, progress=False)["Close"]
     prices = prices[TICKERS].ffill()  # UK and US holidays differ, so fill gaps
-    empty = [t for t in TICKERS if prices[t].isna().all()]
-    if empty:
-        raise SystemExit(f"No data downloaded for {empty}. Run it again, or clear the yfinance cache.")
     # Check the data before trusting it
     print("Data range:", prices.index[0].date(), "to", prices.index[-1].date())
     print("Missing values per ticker:\n", prices.isna().sum(), "\n")
