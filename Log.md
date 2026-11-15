@@ -5,3 +5,8 @@
 - Problems: TLT download failed ("database is locked") and ISF.L had too little history.
 - Decisions: replaced ISF.L with EWU for data availability. This was decided before seeing any results. Set the split date at 2017-01-01 and the lookback at 12 months in advance.
 - Next: write the README hypothesis, read the results tables, plan the out-of-sample test.
+## 2026-11-15
+- Problem: first results ran on ISF.L, not EWU, because the ticker edit wasn't applied. Results started in 2010 and missed 2008.
+- First run (ISF.L, superseded): strategy Sharpe 0.82 vs buy-and-hold 0.90 over 2010-2026.
+- Fix: swapped ISF.L for EWU (data availability, not performance) and re-ran.
+- Rule: no further changes to settings based on results.

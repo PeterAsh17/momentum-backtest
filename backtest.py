@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 # ----------------------------------------------------------------------------
 # Settings (decide these up front; do not tune them on the out-of-sample period)
 # ----------------------------------------------------------------------------
-TICKERS = ["SPY", "ISF.L", "TLT", "GLD"]  # US equities, UK equities, bonds, gold
+TICKERS = ["SPY", "EWU", "TLT", "GLD"]  # US equities, UK equities (USD), bonds, gold
 START = "2005-01-01"
 SPLIT_DATE = "2017-01-01"  # before = in-sample, after = out-of-sample
 LOOKBACK = 12              # months
