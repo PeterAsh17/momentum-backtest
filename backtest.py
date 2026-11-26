@@ -7,65 +7,50 @@ import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
 
-TICKERS = ["SPY", "EWU", "TLT", "GLD"]  # US equities, UK equities (USD), bonds, gold
+TICKERS = ["SPY", "EWU", "TLT", "GLD"]  # US equities, UK equities, US bonds, gold
 START = "2005-01-01"
-SPLIT_DATE = "2017-01-01"  # before = in-sample, after = out-of-sample
-LOOKBACK = 12              # months
-SKIP = 1                   # skip the most recent month (the "12-1" convention
+SPLIT_DATE = "2017-01-01"  
+LOOKBACK = 12              
+SKIP = 1                   
 COST_BPS = 10             
 
 
-# ----------------------------------------------------------------------------
-# Step 3: data
-# ----------------------------------------------------------------------------
 def load_monthly_prices():
     prices = yf.download(TICKERS, start=START, auto_adjust=True, progress=False)["Close"]
-    prices = prices[TICKERS].ffill()  # UK and US holidays differ, so fill gaps
-    # Check the data before trusting it
+    prices = prices[TICKERS].ffill() 
     print("Data range:", prices.index[0].date(), "to", prices.index[-1].date())
     print("Missing values per ticker:\n", prices.isna().sum(), "\n")
-    # Month-end prices. If "ME" raises an error: pip install --upgrade pandas
+
     return prices.resample("ME").last()
 
 
-# ----------------------------------------------------------------------------
-# Step 4: signal
-# ----------------------------------------------------------------------------
 def momentum_signal(monthly_prices, lookback=LOOKBACK, skip=SKIP):
     """Return from `lookback` months ago to `skip` months ago, known at month end."""
     return monthly_prices.shift(skip) / monthly_prices.shift(lookback) - 1
 
 
-# ----------------------------------------------------------------------------
-# Step 5: returns with costs
-# ----------------------------------------------------------------------------
 def run_strategy(monthly_prices):
     rets = monthly_prices.pct_change()
     signal = momentum_signal(monthly_prices).dropna()
 
-    # Equal weight in each asset with a positive signal, remainder in cash (0%).
-    # shift(1) is CRUCIAL: the signal at the end of month t is used to hold
-    # positions DURING month t+1. Remove it and you get look-ahead bias.
+
     weights = (signal > 0).astype(float).div(len(TICKERS)).shift(1)
 
     valid = weights.dropna().index
     rets, weights = rets.loc[valid], weights.loc[valid]
 
     turnover = weights.diff().abs().sum(axis=1)
-    turnover.iloc[0] = weights.iloc[0].abs().sum()  # cost of the initial purchase
+    turnover.iloc[0] = weights.iloc[0].abs().sum() 
     costs = turnover * COST_BPS / 10_000
 
     gross = (weights * rets).sum(axis=1)
     net = gross - costs
-    benchmark = rets.mean(axis=1)  # equal weight, rebalanced monthly, always invested
+    benchmark = rets.mean(axis=1) 
     return pd.DataFrame(
         {"Strategy (net)": net, "Strategy (gross)": gross, "Buy and hold": benchmark}
     ), turnover
 
 
-# ----------------------------------------------------------------------------
-# Step 6: measure properly
-# ----------------------------------------------------------------------------
 def metrics(r):
     equity = (1 + r).cumprod()
     years = len(r) / 12
