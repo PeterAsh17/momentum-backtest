@@ -1,13 +1,5 @@
 """
 12-1 momentum backtest on a small ETF universe.
-
-Hypothesis (write this in your README BEFORE looking at results):
-Assets with a positive trailing 12-month return (skipping the most recent
-month) keep outperforming over the next month. Holding them when the signal is
-positive, and cash otherwise, should beat buy-and-hold on a risk-adjusted
-basis after transaction costs.
-
-Run with:  python backtest.py   (or  py backtest.py  on Windows)
 """
 
 import numpy as np
@@ -15,15 +7,12 @@ import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
 
-# ----------------------------------------------------------------------------
-# Settings (decide these up front; do not tune them on the out-of-sample period)
-# ----------------------------------------------------------------------------
 TICKERS = ["SPY", "EWU", "TLT", "GLD"]  # US equities, UK equities (USD), bonds, gold
 START = "2005-01-01"
 SPLIT_DATE = "2017-01-01"  # before = in-sample, after = out-of-sample
 LOOKBACK = 12              # months
-SKIP = 1                   # skip the most recent month (the "12-1" convention)
-COST_BPS = 10              # cost per unit of turnover, in basis points
+SKIP = 1                   # skip the most recent month (the "12-1" convention
+COST_BPS = 10             
 
 
 # ----------------------------------------------------------------------------
