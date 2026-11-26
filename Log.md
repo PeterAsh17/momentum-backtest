@@ -10,3 +10,5 @@
 - First run (ISF.L, superseded): strategy Sharpe 0.82 vs buy-and-hold 0.90 over 2010-2026.
 - Fix: swapped ISF.L for EWU (data availability, not performance) and re-ran.
 - Rule: no further changes to settings based on results.
+## 2026-11-26
+- Final README completed and final backtest edits made. 
